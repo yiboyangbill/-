@@ -14,13 +14,42 @@ local dPad
 local upArrow
 local downArrow
 local leftArrow
-local rightArrow
-local knight
+local rightArrow = nill
+local knight = nill
 local ninja
 local jumpButton
 local shootButton
 local backGroup
 local mainGroup
+local map = nill
+
+local function onRightArrowTouch(event)
+	if (event.phase == "began") then
+		if knight.sequence ~= "run" then
+			knight.sequence = "run"
+			knight:setSequence( "run" )
+			knight:play()
+		end
+	elseif (event.phase =="ended") then
+		if knight.sequence ~= "idle" then
+			knight.sequence = "idle"
+			knight:setSequence("idle")
+			knight:play()
+		end
+	end
+	return true
+end
+
+local moveKnight = function(event)
+	if knight.sequence == "run" then
+		tranaition.moveBy( knight,{
+			x = 10,
+			y = 0,
+			time = 0
+		    })
+	end
+end
+
 local function swapSheet()
 	knight:setSequence( "walk" )
 	knight:play()
@@ -364,6 +393,7 @@ function scene:show( event )
 
 	if ( phase == "will" ) then
 		-- Code here runs when the scene is still off screen (but is about to come on screen)
+		rightArrow:addEventListener( "touch", onRightArrowTouch)
 
 	elseif ( phase == "did" ) then
 		-- Code here runs when the scene is entirely on screen
@@ -373,7 +403,7 @@ function scene:show( event )
 		knight:play()
 		timer.performWithDelay( 2250, swapSheet )
 		ninja:play()
-		
+		Runtime:addEventListener( "enterFrame", moveKnight )
 	end
 end
 -- hide()
@@ -384,10 +414,12 @@ function scene:hide( event )
 
 	if ( phase == "will" ) then
 		-- Code here runs when the scene is on screen (but is about to go off screen)
+        
 
 	elseif ( phase == "did" ) then
 		-- Code here runs immediately after the scene goes entirely off screen
-		
+		rightArrow:addEventListener( "touch", onRightArrowTouch )
+		Runtime:addEventListener( "enterFrame", moveKnight )
 	end
 end
 
